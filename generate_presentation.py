@@ -72,6 +72,7 @@ SLIDES = [
         "accent": ACCENT_CYBER,
         "image": "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Computer Processor",
+        "img_label_uz": "Rasm: Protsessor",
         "title": "Kompyuterlar nima uchun qiziydi va qanday soviydi?",
         "subtitle": "Protsessor ishlayotganda issiqlik ajralib chiqishi va kulerlar yordamida sovutish fizikasi.",
         "body": [
@@ -86,6 +87,7 @@ SLIDES = [
         "accent": ACCENT_CYBER,
         "image": "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=1000&q=80",
         "img_label": "PC Internals",
+        "img_label_uz": "Rasm: Kompyuter ichki tuzilishi",
         "title": "Taqdimot rejasi",
         "body": [
             "1-reja. Tranzistorlar va issiqlik ajralib chiqish fizikasi (Joul-Lents qonuni).",
@@ -99,6 +101,7 @@ SLIDES = [
         "accent": ACCENT_HEAT,
         "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Transistors Microchip",
+        "img_label_uz": "Rasm: Tranzistorlar va mikrochip",
         "title": "1. Nega protsessor (CPU) qiziydi?",
         "body": [
             "Kompyuterning miyasi bo'lgan protsessor (CPU) ichida milliardlab mikroskopik tranzistorlar joylashgan.",
@@ -111,6 +114,7 @@ SLIDES = [
         "accent": ACCENT_HEAT2,
         "image": "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Physics Energy",
+        "img_label_uz": "Rasm: Energiya va fizika",
         "title": "Joul-Lents qonuni amalda",
         "body": [
             "Protsessordagi qizish bevosita fizikaning Joul-Lents qonuni bilan tushuntiriladi.",
@@ -123,6 +127,7 @@ SLIDES = [
         "accent": ACCENT_COOL,
         "image": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Thermal Paste",
+        "img_label_uz": "Rasm: Termopasta",
         "title": "2. Issiqlikni uzoqlashtirish: Termopasta",
         "body": [
             "Protsessor yuzasida hosil bo'lgan kuchli issiqlikni tezda olib tashlash axborot tizimining barqaror ishlashi uchun juda muhim.",
@@ -135,6 +140,7 @@ SLIDES = [
         "accent": ACCENT_COOL2,
         "image": "https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Heatsink",
+        "img_label_uz": "Rasm: Radiator (Heatsink)",
         "title": "Radiator (Heatsink) fizikasi",
         "body": [
             "Termopasta orqali o'tgan issiqlik mis yoki alyuminiydan yasalgan radiatorga yetib boradi.",
@@ -147,6 +153,7 @@ SLIDES = [
         "accent": ACCENT_COOL,
         "image": "https://images.unsplash.com/photo-1587202372775-b22f4625b15a?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Computer Fan",
+        "img_label_uz": "Rasm: Kuler (ventilyator)",
         "title": "3. Konveksiya: Kuler (Ventilyator) qanday soviydi?",
         "body": [
             "Radiator o'ziga issiqlikni olgach, uning atrofidagi havo qiziydi. Agar bu havo yangilanmasa, sovutish to'xtaydi.",
@@ -159,6 +166,7 @@ SLIDES = [
         "accent": ACCENT_COOL2,
         "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Liquid Cooling",
+        "img_label_uz": "Rasm: Suvli sovutish",
         "title": "Suvli sovutish (Liquid Cooling) texnologiyasi",
         "body": [
             "Juda kuchli protsessorlar (masalan, Data markazlar yoki o'yin kompyuterlari) uchun oddiy havo yetarli bo'lmaydi.",
@@ -171,6 +179,7 @@ SLIDES = [
         "accent": ACCENT_CYBER,
         "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Data Center",
+        "img_label_uz": "Rasm: Ma'lumotlar markazi",
         "title": "Xulosa",
         "body": [
             "Xulosa qilib aytganda, kompyuterning ishlashi to'liq elektr toki va termodinamika qonunlariga bog'liq. Axborot qanchalik tez qayta ishlansa, shuncha ko'p elektr issiqlikka aylanadi.",
@@ -182,6 +191,7 @@ SLIDES = [
         "accent": ACCENT_CYBER,
         "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000&q=80",
         "img_label": "Abstract IT",
+        "img_label_uz": "Rasm: Axborot texnologiyalari",
         "title": "E'tiboringiz uchun rahmat!",
         "body": [
             "Mavzu: Kompyuterning qizishi va sovutish fizikasi",
@@ -198,32 +208,84 @@ assert len(SLIDES) == 10, "Taqdimot aniq 10 ta slayddan iborat bo'lishi shart"
 #  Rasm yuklash (umumiy, ikkala yo'l uchun)
 # --------------------------------------------------------------------------- #
 
-def try_download_image(url, dest_path):
-    """URL ni yuklab olishga harakat qiladi. Muvaffaqiyat bo'lsa True.
+# Qo'llab-quvvatlanadigan rasm turlari: (kengaytma, content-type).
+# Noma'lum tur uchun jpg/jpeg ga qaytamiz.
+_EXT_CONTENT_TYPE = {
+    "jpg": "image/jpeg",
+    "png": "image/png",
+    "gif": "image/gif",
+    "webp": "image/webp",
+    "bmp": "image/bmp",
+}
 
-    Avval requests, bo'lmasa urllib ishlatiladi. Har qanday xatolikda False
-    qaytaradi (skript qulamaydi).
+
+def sniff_image_ext(data, content_type=None, url=None):
+    """Yuklab olingan baytlar asosida rasm kengaytmasini aniqlaydi.
+
+    Avval sehrli baytlar (magic bytes) tekshiriladi, so'ng HTTP content-type,
+    oxirida URL kengaytmasi. Hech biri mos kelmasa 'jpg' qaytariladi.
+    """
+    if data:
+        if data[:3] == b"\xff\xd8\xff":
+            return "jpg"
+        if data[:8] == b"\x89PNG\r\n\x1a\n":
+            return "png"
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            return "gif"
+        if len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+            return "webp"
+        if data[:2] == b"BM":
+            return "bmp"
+    if content_type:
+        ct = content_type.split(";")[0].strip().lower()
+        for ext, known in _EXT_CONTENT_TYPE.items():
+            if ct == known:
+                return ext
+        if ct == "image/jpg":
+            return "jpg"
+    if url:
+        low = url.split("?")[0].lower()
+        for ext in _EXT_CONTENT_TYPE:
+            if low.endswith("." + ext) or low.endswith(".jpeg"):
+                return "jpg" if ext == "jpg" else ext
+    return "jpg"
+
+
+def content_type_for_ext(ext):
+    """Kengaytma uchun content-type qaytaradi (noma'lum bo'lsa image/jpeg)."""
+    return _EXT_CONTENT_TYPE.get(ext, "image/jpeg")
+
+
+def try_download_image(url, dest_dir, basename):
+    """URL ni yuklab olishga harakat qiladi.
+
+    Avval requests, bo'lmasa urllib ishlatiladi. Haqiqiy fayl turini (JPEG,
+    PNG, WebP va h.k.) aniqlab, mos kengaytma bilan saqlaydi. Muvaffaqiyat
+    bo'lsa to'liq yo'lni qaytaradi, aks holda None (skript qulamaydi).
     """
     try:
+        data = None
+        content_type = None
         try:
             import requests  # type: ignore
             resp = requests.get(url, timeout=DOWNLOAD_TIMEOUT)
             if resp.status_code == 200 and resp.content:
-                with open(dest_path, "wb") as f:
-                    f.write(resp.content)
-                return True
-            return False
+                data = resp.content
+                content_type = resp.headers.get("Content-Type")
         except ImportError:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(req, timeout=DOWNLOAD_TIMEOUT) as r:
                 data = r.read()
-            if data:
-                with open(dest_path, "wb") as f:
-                    f.write(data)
-                return True
-            return False
+                content_type = r.headers.get("Content-Type")
+        if not data:
+            return None
+        ext = sniff_image_ext(data, content_type, url)
+        dest_path = os.path.join(dest_dir, "%s.%s" % (basename, ext))
+        with open(dest_path, "wb") as f:
+            f.write(data)
+        return dest_path
     except Exception:
-        return False
+        return None
 
 
 def prepare_images():
@@ -236,13 +298,13 @@ def prepare_images():
 
     results = []
     for idx, slide in enumerate(SLIDES, start=1):
-        dest = os.path.join(IMAGES_DIR, "slide%02d.jpg" % idx)
-        ok = try_download_image(slide["image"], dest)
-        if ok and os.path.exists(dest) and os.path.getsize(dest) > 0:
-            results.append((True, dest, "image OK"))
-            print("Slide %d: image OK (%s)" % (idx, dest))
+        path = try_download_image(slide["image"], IMAGES_DIR, "slide%02d" % idx)
+        if path and os.path.exists(path) and os.path.getsize(path) > 0:
+            ext = os.path.splitext(path)[1].lstrip(".").lower() or "jpg"
+            results.append((True, path, ext))
+            print("Slide %d: image OK (%s, %s)" % (idx, path, content_type_for_ext(ext)))
         else:
-            results.append((False, None, "placeholder (download failed / network blocked)"))
+            results.append((False, None, None))
             print("Slide %d: placeholder (download failed / network blocked)" % idx)
     return results
 
@@ -252,6 +314,14 @@ def prepare_images():
 # --------------------------------------------------------------------------- #
 
 def build_with_pptx(image_results):
+    # ESLATMA (smoke-test): bu python-pptx yo'li tarmoqsiz sandboxda ishga
+    # tushirib bo'lmaydi (python-pptx/lxml o'rnatilmaydi). Shu sababli uni
+    # tarmoqli mashinada bir marta "smoke run" qilib tekshirish tavsiya
+    # etiladi: `pip install -r requirements.txt && python3 generate_presentation.py`.
+    # Ayniqsa quyidagi set_run ichidagi qo'lda a:latin/a:cs/a:ea qo'shilishi
+    # python-pptx ning o'z font.name ishlovi bilan birga faqat BITTA toza
+    # a:latin hosil qilishini (dublikatsiz) va rasm yuklash haqiqiy tur bilan
+    # (JPEG/PNG/WebP) joylashishini shu yerda tasdiqlash kerak.
     from pptx import Presentation
     from pptx.util import Emu, Pt
     from pptx.dml.color import RGBColor
@@ -310,7 +380,7 @@ def build_with_pptx(image_results):
         img_y = int(1.0 * EMU_IN)
         img_cx = int(4.2 * EMU_IN)
         img_cy = int(5.3 * EMU_IN)
-        ok, path, _reason = image_results[idx - 1]
+        ok, path, _ext = image_results[idx - 1]
         if ok and path:
             try:
                 slide.shapes.add_picture(path, Emu(img_x), Emu(img_y), Emu(img_cx), Emu(img_cy))
@@ -325,7 +395,9 @@ def build_with_pptx(image_results):
             tf.vertical_anchor = MSO_ANCHOR.MIDDLE
             p = tf.paragraphs[0]
             p.alignment = PP_ALIGN.CENTER
-            set_run(p.add_run(), slide_data["img_label"], SZ_META, accent, bold=True)
+            # O'zbekcha placeholder yorlig'i (tarmoqsiz qurishda butun slayd
+            # o'zbekcha qolishi uchun inglizcha img_label o'rniga ishlatiladi).
+            set_run(p.add_run(), slide_data["img_label_uz"], SZ_META, accent, bold=True)
 
         # Sarlavha
         title_box = slide.shapes.add_textbox(
@@ -461,14 +533,15 @@ def _build_slide_xml(slide_data, image_result):
     img_y = int(1.0 * EMU_IN)
     img_cx = int(4.2 * EMU_IN)
     img_cy = int(5.3 * EMU_IN)
-    ok, _path, _reason = image_result
+    ok, _path, _ext = image_result
     pic_rel = None
     if ok:
         pic_rel = "rIdImg"
         shapes.append(_pic_sp(spid, "picture", pic_rel, img_x, img_y, img_cx, img_cy))
         spid += 1
     else:
-        label_p = _para_xml(_run_xml(slide_data["img_label"], SZ_META, accent, True), align="ctr")
+        # O'zbekcha placeholder yorlig'i (tarmoqsiz qurishda butun slayd o'zbekcha qoladi).
+        label_p = _para_xml(_run_xml(slide_data["img_label_uz"], SZ_META, accent, True), align="ctr")
         shapes.append(_rect_sp(spid, "placeholder", img_x, img_y, img_cx, img_cy,
                                BG_PANEL, line_hex=accent, paragraphs_xml=label_p, anchor="ctr"))
         spid += 1
@@ -545,6 +618,9 @@ def build_with_stdlib(image_results):
         '<Default Extension="jpg" ContentType="image/jpeg"/>'
         '<Default Extension="jpeg" ContentType="image/jpeg"/>'
         '<Default Extension="png" ContentType="image/png"/>'
+        '<Default Extension="gif" ContentType="image/gif"/>'
+        '<Default Extension="webp" ContentType="image/webp"/>'
+        '<Default Extension="bmp" ContentType="image/bmp"/>'
         '<Override PartName="/ppt/presentation.xml" '
         'ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>'
         '<Override PartName="/ppt/slideMasters/slideMaster1.xml" '
@@ -672,11 +748,12 @@ def build_with_stdlib(image_results):
             slide_xml, pic_rel = _build_slide_xml(slide_data, result)
             z.writestr("ppt/slides/slide%d.xml" % idx, slide_xml)
             has_pic = pic_rel is not None
-            img_filename = "image%d.jpg" % idx
+            ok, path, ext = result
+            ext = (ext or "jpg").lower()
+            img_filename = "image%d.%s" % (idx, ext)
             z.writestr("ppt/slides/_rels/slide%d.xml.rels" % idx,
                        _slide_rels_xml(has_pic, img_filename))
             if has_pic:
-                ok, path, _r = result
                 with open(path, "rb") as f:
                     z.writestr("ppt/media/%s" % img_filename, f.read())
 
