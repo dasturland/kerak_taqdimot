@@ -1,26 +1,39 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""python-pptx'siz (faqat standart kutubxona) PPTX generatori.
+"""python-pptx'siz (faqat standart kutubxona) PROFESSIONAL PPTX generatori.
 
 Bu skript `generate_presentation.py` bilan AYNAN bir xil kontentni ishlab
 chiqaradi, ammo python-pptx o'rnatilmagan yoki internet cheklangan muhitlar
 uchun mo'ljallangan. .pptx fayli OOXML (Office Open XML) formatidagi ZIP
 to'plami bo'lgani uchun uni to'g'ridan-to'g'ri `zipfile` yordamida tuzamiz.
 
-Natija:
+Yangilangan (professional) dizayn:
   * Aynan 10 ta slayd.
   * Har bir run'da shrift "Times New Roman" aniq o'rnatilgan.
   * Minimal shrift 12 pt (title 40, subtitle 24, slayd sarlavhasi 32, ...).
-  * Har bir slaydga Unsplash rasmi joylanadi (yuklab olinmasa placeholder).
-  * To'q, texnologik rang sxemasi.
+  * Har bir slaydda MAVZUGA ALOQADOR vektor illyustratsiya (DrawingML):
+      1  stilizatsiya qilingan barmoq izi + skan chizig'i
+      2  raqamlangan reja/mundarija ikonkasi
+      3  ridge'lar + minutiae nuqtalari
+      4  barmoq izi -> ikkilik/hash raqamlari
+      5  LED yorug'lik nurlari va qaytish (optik)
+      6  CMOS piksel panjarasi (2D tasvir)
+      7  ultratovush konsentrik impulslari
+      8  echo to'lqinlari + 3D relyef balandlik profili
+      9  qalqon/qulf (yorug'lik + tovush birlashuvi)
+     10  barmoq izi + qulf nishoni (yakun)
+  * 4 qismli tuzilma uchun bo'lim indikatorlari (section pills).
+  * To'q, texnologik kiberxavfsizlik rang sxemasi.
+
+Rasmlar vektorli bo'lgani uchun hech qanday tashqi tarmoq yoki Pillow
+kutubxonasi kerak emas. (Internetli muhitda `generate_presentation.py`
+Unsplash fotosuratlarini yuklab oladi - URL'lar slides_content.py'da.)
 
 Foydalanish:
     python3 build_pptx_fallback.py [chiqish.pptx]
 """
-import io
 import os
 import sys
-import urllib.request
 import zipfile
 from xml.sax.saxutils import escape
 
@@ -31,12 +44,20 @@ from slides_content import (
     SIZE_TITLE, SIZE_SUBTITLE, SIZE_SLIDE_TITLE,
     SIZE_BODY_HEAD, SIZE_BODY, SIZE_META,
 )
-from placeholder import make_placeholder_png
+import illustrations as il
 
 # EMU: 1 inch = 914400 EMU. 16:9 slayd.
 EMU = 914400
 SLIDE_W = int(13.333 * EMU)
 SLIDE_H = int(7.5 * EMU)
+
+PAL = il.make_palette(COLOR_PANEL, COLOR_ACCENT, COLOR_ACCENT2, COLOR_TITLE, COLOR_BG_DARK)
+
+# 4 qismli tuzilma: har bir slayd qaysi bo'limga tegishli (indikator uchun).
+#   0 = kirish (titul/reja), 1..3 = asosiy rejalar, 4 = xulosa/yakun
+SECTIONS = ["KIRISH", "1-REJA", "1-REJA", "1-REJA",
+            "2-REJA", "2-REJA", "3-REJA", "3-REJA", "XULOSA", "XULOSA"]
+SECTION_STEP = [0, 1, 1, 1, 2, 2, 3, 3, 4, 4]  # 0..4 (5 ta nuqta indikator)
 
 
 def hexc(t):
@@ -45,23 +66,6 @@ def hexc(t):
 
 def inch(v):
     return int(v * EMU)
-
-
-def fetch_image(url, idx):
-    """Unsplash rasmini yuklab oladi; muvaffaqiyatsizlikda placeholder PNG."""
-    headers = {"User-Agent": "Mozilla/5.0 (presentation-generator)"}
-    for attempt in range(3):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                data = resp.read()
-            if data and len(data) > 1000:
-                print("  [OK] rasm yuklandi (%d bayt)" % len(data))
-                return data, "jpeg"
-        except Exception as exc:  # noqa: BLE001
-            print("  [urinish %d] rasm yuklanmadi: %s" % (attempt + 1, exc))
-    print("  [FALLBACK] placeholder rasm ishlatilmoqda")
-    return make_placeholder_png(idx), "png"
 
 
 # ----------------------------------------------------------------------------
@@ -82,32 +86,51 @@ def run_xml(text, size_pt, color, bold=False, italic=False):
     )
 
 
-def para_xml(runs_xml, align=None, space_before=None, space_after=None):
-    ppr = ''
+def para_xml(runs_xml, align=None, space_before=None, space_after=None, line_spc=None):
     inner = ''
+    if line_spc is not None:
+        inner += '<a:lnSpc><a:spcPct val="%d"/></a:lnSpc>' % int(line_spc * 1000)
     if space_before is not None:
         inner += '<a:spcBef><a:spcPts val="%d"/></a:spcBef>' % int(space_before * 100)
     if space_after is not None:
         inner += '<a:spcAft><a:spcPts val="%d"/></a:spcAft>' % int(space_after * 100)
     algn = ' algn="%s"' % align if align else ''
+    ppr = ''
     if inner or algn:
         ppr = '<a:pPr%s>%s</a:pPr>' % (algn, inner)
     return '<a:p>%s%s</a:p>' % (ppr, runs_xml)
 
 
-def rect_shape(sid, name, x, y, cx, cy, fill_color, line_color=None):
-    line = ''
+def rect_shape(sid, name, x, y, cx, cy, fill_color, line_color=None, lw=12700, round_=False):
+    prst = "roundRect" if round_ else "rect"
     if line_color:
-        line = '<a:ln w="12700"><a:solidFill><a:srgbClr val="%s"/></a:solidFill></a:ln>' % hexc(line_color)
+        line = '<a:ln w="%d"><a:solidFill><a:srgbClr val="%s"/></a:solidFill></a:ln>' % (lw, hexc(line_color))
     else:
         line = '<a:ln><a:noFill/></a:ln>'
+    fill = ('<a:solidFill><a:srgbClr val="%s"/></a:solidFill>' % hexc(fill_color)
+            if fill_color is not None else '<a:noFill/>')
     return (
         '<p:sp><p:nvSpPr><p:cNvPr id="%d" name="%s"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>'
         '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm>'
-        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>'
-        '<a:solidFill><a:srgbClr val="%s"/></a:solidFill>%s</p:spPr>'
+        '<a:prstGeom prst="%s"><a:avLst/></a:prstGeom>%s%s</p:spPr>'
         '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
-        % (sid, name, x, y, cx, cy, hexc(fill_color), line)
+        % (sid, name, x, y, cx, cy, prst, fill, line)
+    )
+
+
+def gradient_bg(sid, c1, c2):
+    """Diagonal gradient orqa fon (to'q -> biroz ko'kroq) - professional ko'rinish."""
+    return (
+        '<p:sp><p:nvSpPr><p:cNvPr id="%d" name="bg"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>'
+        '<p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="%d" cy="%d"/></a:xfrm>'
+        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>'
+        '<a:gradFill><a:gsLst>'
+        '<a:gs pos="0"><a:srgbClr val="%s"/></a:gs>'
+        '<a:gs pos="100000"><a:srgbClr val="%s"/></a:gs>'
+        '</a:gsLst><a:lin ang="2700000" scaled="1"/></a:gradFill>'
+        '<a:ln><a:noFill/></a:ln></p:spPr>'
+        '<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
+        % (sid, SLIDE_W, SLIDE_H, hexc(c1), hexc(c2))
     )
 
 
@@ -116,29 +139,62 @@ def textbox_shape(sid, name, x, y, cx, cy, paras_xml, anchor="t"):
         '<p:sp><p:nvSpPr><p:cNvPr id="%d" name="%s"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr>'
         '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm>'
         '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr>'
-        '<p:txBody><a:bodyPr wrap="square" anchor="%s"><a:normAutofit/></a:bodyPr>'
-        '<a:lstStyle/>%s</p:txBody></p:sp>'
+        '<p:txBody><a:bodyPr wrap="square" anchor="%s" lIns="91440" rIns="91440">'
+        '<a:normAutofit/></a:bodyPr><a:lstStyle/>%s</p:txBody></p:sp>'
         % (sid, name, x, y, cx, cy, anchor, paras_xml)
     )
 
 
-def pic_shape(sid, name, rid, x, y, cx, cy):
-    return (
-        '<p:pic><p:nvPicPr><p:cNvPr id="%d" name="%s"/><p:cNvPicPr>'
-        '<a:picLocks noChangeAspect="0"/></p:cNvPicPr><p:nvPr/></p:nvPicPr>'
-        '<p:blipFill><a:blip r:embed="%s"/><a:stretch><a:fillRect/></a:stretch></p:blipFill>'
-        '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm>'
-        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>'
-        % (sid, name, rid, x, y, cx, cy)
-    )
+# ----------------------------------------------------------------------------
+# Umumiy dizayn elementlari
+# ----------------------------------------------------------------------------
+
+def section_indicator(nid, step):
+    """O'ngdagi 5 nuqtali bo'lim indikatori (4 qismli tuzilmani ko'rsatadi)."""
+    out = ''
+    x = inch(12.75)
+    for i in range(5):
+        y = inch(2.9) + i * inch(0.42)
+        active = (i == step)
+        if active:
+            out += rect_shape(nid(), "dotA", x - inch(0.03), y, inch(0.18), inch(0.18),
+                              COLOR_ACCENT, round_=True)
+        else:
+            out += rect_shape(nid(), "dot", x, y, inch(0.12), inch(0.12),
+                              None, line_color=(0x2A, 0x45, 0x63), lw=12700, round_=True)
+    return out
+
+
+def footer(nid, idx):
+    """Pastki kolontitul: mavzu + slayd raqami."""
+    out = rect_shape(nid(), "fline", inch(0.6), inch(7.02), inch(12.13), inch(0.016),
+                     (0x24, 0x3B, 0x55))
+    pL = para_xml(run_xml("Barmoq izi skanerlari \u2014 Optika va Ultratovush",
+                          SIZE_META, (0x7A, 0x93, 0xAD)))
+    out += textbox_shape(nid(), "fl", inch(0.6), inch(7.05), inch(8.0), inch(0.4), pL)
+    pR = para_xml(run_xml("%02d / 10" % (idx + 1), SIZE_META, COLOR_ACCENT, bold=True),
+                  align="r")
+    out += textbox_shape(nid(), "fr", inch(9.5), inch(7.05), inch(3.23), inch(0.4), pR)
+    return out
+
+
+def section_pill(nid, idx):
+    """Sarlavha tepasidagi kichik bo'lim yorlig'i (pill)."""
+    label = SECTIONS[idx]
+    pill = rect_shape(nid(), "pill", inch(0.9), inch(0.42), inch(1.75), inch(0.42),
+                      COLOR_ACCENT2, round_=True)
+    txt = para_xml(run_xml(label, SIZE_META, COLOR_TITLE, bold=True), align="ctr")
+    pill += textbox_shape(nid(), "pilltxt", inch(0.9), inch(0.42), inch(1.75), inch(0.42),
+                          txt, anchor="ctr")
+    return pill
 
 
 # ----------------------------------------------------------------------------
 # Slayd tuzuvchilari
 # ----------------------------------------------------------------------------
 
-def build_slide_shapes(data, idx, img_rid):
-    """Slayd turiga qarab shakllar XML'ini qaytaradi."""
+def build_slide_shapes(data, idx):
+    """Slayd turiga qarab shakllar XML'ini qaytaradi (vektor rasm bilan)."""
     shapes = []
     sid = [10]
 
@@ -146,47 +202,69 @@ def build_slide_shapes(data, idx, img_rid):
         sid[0] += 1
         return sid[0]
 
-    # orqa fon
-    shapes.append(rect_shape(nid(), "bg", 0, 0, SLIDE_W, SLIDE_H, COLOR_BG_DARK))
+    # gradient orqa fon
+    shapes.append(gradient_bg(nid(), COLOR_BG_DARK, COLOR_PANEL))
 
     if data["kind"] == "title":
-        # o'ngda rasm
-        shapes.append(pic_shape(nid(), "img", img_rid, inch(7.4), 0, inch(5.933), SLIDE_H))
-        # aksent chiziq
-        shapes.append(rect_shape(nid(), "accent", inch(0.6), inch(1.2), inch(0.12), inch(2.4), COLOR_ACCENT))
-        # sarlavha + kichik sarlavha
-        p1 = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_TITLE, bold=True))
-        p2 = para_xml(run_xml(data["subtitle"], SIZE_SUBTITLE, COLOR_ACCENT, italic=True), space_before=14)
-        shapes.append(textbox_shape(nid(), "title", inch(0.9), inch(1.1), inch(6.1), inch(2.8), p1 + p2))
-        # meta
-        metas = ''.join(para_xml(run_xml(l, SIZE_META, COLOR_BODY), space_after=6) for l in data["lines"])
-        shapes.append(textbox_shape(nid(), "meta", inch(0.9), inch(4.3), inch(6.1), inch(2.8), metas))
+        # chapda matn, o'ngda katta illyustratsiya kartasi
+        shapes.append(rect_shape(nid(), "accent", inch(0.9), inch(1.5), inch(0.14), inch(2.6),
+                                 COLOR_ACCENT))
+        p1 = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_TITLE, bold=True), line_spc=104)
+        p2 = para_xml(run_xml(data["subtitle"], SIZE_SUBTITLE, COLOR_ACCENT, italic=True),
+                      space_before=16, line_spc=108)
+        shapes.append(textbox_shape(nid(), "title", inch(1.25), inch(1.35), inch(6.0), inch(3.0),
+                                    p1 + p2))
+        metas = ''.join(para_xml(run_xml(l, SIZE_META, COLOR_BODY), space_after=7)
+                        for l in data["lines"])
+        shapes.append(rect_shape(nid(), "mpanel", inch(1.1), inch(4.5), inch(6.1), inch(2.3),
+                                 COLOR_BG_DARK, line_color=(0x24, 0x3B, 0x55), lw=9525, round_=True))
+        shapes.append(textbox_shape(nid(), "meta", inch(1.25), inch(4.6), inch(5.8), inch(2.1),
+                                    metas))
+        # illyustratsiya (o'ngda)
+        shapes.append(il.build_illustration(idx, inch(7.9), inch(1.3), inch(4.6), inch(4.9), PAL))
 
     elif data["kind"] == "closing":
-        shapes.append(pic_shape(nid(), "img", img_rid, 0, 0, SLIDE_W, SLIDE_H))
-        shapes.append(rect_shape(nid(), "panel", inch(1.5), inch(2.3), inch(10.33), inch(3.0), COLOR_BG_DARK, line_color=COLOR_ACCENT))
+        # markazda illyustratsiya + matn paneli
+        shapes.append(il.build_illustration(idx, inch(5.0), inch(0.75), inch(3.33), inch(3.3), PAL))
+        shapes.append(rect_shape(nid(), "panel", inch(1.6), inch(4.2), inch(10.13), inch(2.5),
+                                 COLOR_BG_DARK, line_color=COLOR_ACCENT, lw=15875, round_=True))
         p = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_ACCENT, bold=True), align="ctr")
         for l in data["lines"]:
-            p += para_xml(run_xml(l, SIZE_META, COLOR_BODY), align="ctr", space_before=8)
-        shapes.append(textbox_shape(nid(), "ctext", inch(1.8), inch(2.5), inch(9.7), inch(2.6), p, anchor="ctr"))
+            p += para_xml(run_xml(l, SIZE_META, COLOR_BODY), align="ctr", space_before=9)
+        shapes.append(textbox_shape(nid(), "ctext", inch(1.9), inch(4.35), inch(9.5), inch(2.2),
+                                    p, anchor="ctr"))
 
     else:  # content
-        shapes.append(rect_shape(nid(), "topbar", 0, inch(1.15), SLIDE_W, inch(0.05), COLOR_ACCENT))
-        shapes.append(rect_shape(nid(), "tbar", inch(0.6), inch(0.35), inch(0.12), inch(0.6), COLOR_ACCENT))
-        pt = para_xml(run_xml(data["title"], SIZE_SLIDE_TITLE, COLOR_TITLE, bold=True))
-        shapes.append(textbox_shape(nid(), "title", inch(0.9), inch(0.3), inch(11.8), inch(0.9), pt, anchor="ctr"))
-        # rasm o'ngda
-        shapes.append(pic_shape(nid(), "img", img_rid, inch(8.5), inch(1.6), inch(4.3), inch(5.4)))
-        # matn paneli chapda
-        shapes.append(rect_shape(nid(), "panel", inch(0.5), inch(1.6), inch(7.7), inch(5.4), COLOR_PANEL))
+        # bo'lim yorlig'i (pill)
+        shapes.append(section_pill(nid, idx))
+        # sarlavha
+        pt = para_xml(run_xml(data["title"], SIZE_SLIDE_TITLE, COLOR_TITLE, bold=True),
+                      line_spc=104)
+        shapes.append(textbox_shape(nid(), "title", inch(0.85), inch(0.95), inch(11.5), inch(0.95),
+                                    pt, anchor="ctr"))
+        # sarlavha ostidagi aksent chizig'i
+        shapes.append(rect_shape(nid(), "uline", inch(0.9), inch(1.95), inch(2.6), inch(0.05),
+                                 COLOR_ACCENT))
+        # matn paneli (chapda)
+        shapes.append(rect_shape(nid(), "panel", inch(0.6), inch(2.2), inch(7.4), inch(4.6),
+                                 COLOR_PANEL, line_color=(0x24, 0x3B, 0x55), lw=9525, round_=True))
         body = ''
         for l in data["lines"]:
             is_bullet = l.strip().startswith("-")
             if is_bullet:
-                body += para_xml(run_xml(l, SIZE_BODY, COLOR_BODY), space_after=10)
+                body += para_xml(run_xml(l, SIZE_BODY, COLOR_BODY), space_after=11, line_spc=110)
             else:
-                body += para_xml(run_xml(l, SIZE_BODY_HEAD, COLOR_ACCENT, bold=True), space_after=10)
-        shapes.append(textbox_shape(nid(), "body", inch(0.8), inch(1.85), inch(7.1), inch(4.9), body))
+                body += para_xml(run_xml(l, SIZE_BODY_HEAD, COLOR_ACCENT, bold=True),
+                                 space_after=11, line_spc=110)
+        shapes.append(textbox_shape(nid(), "body", inch(0.9), inch(2.4), inch(6.9), inch(4.3),
+                                    body))
+        # illyustratsiya (o'ngda)
+        shapes.append(il.build_illustration(idx, inch(8.35), inch(2.2), inch(4.1), inch(4.6), PAL))
+        # bo'lim indikatori
+        shapes.append(section_indicator(nid, SECTION_STEP[idx]))
+
+    # kolontitul (barcha slaydlarda)
+    shapes.append(footer(nid, idx))
 
     return ''.join(shapes)
 
@@ -209,17 +287,14 @@ def slide_xml(shapes_xml):
     )
 
 
-def slide_rels_xml(img_target):
+def slide_rels_xml():
     return (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
         '<Relationship Id="rId1" '
         'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" '
         'Target="../slideLayouts/slideLayout1.xml"/>'
-        '<Relationship Id="rId2" '
-        'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" '
-        'Target="../media/%s"/>'
-        '</Relationships>' % img_target
+        '</Relationships>'
     )
 
 
@@ -387,15 +462,11 @@ APP_XML = (
 )
 
 
-def content_types_xml(media_exts):
+def content_types_xml():
     defaults = (
         '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
         '<Default Extension="xml" ContentType="application/xml"/>'
     )
-    if "png" in media_exts:
-        defaults += '<Default Extension="png" ContentType="image/png"/>'
-    if "jpeg" in media_exts:
-        defaults += '<Default Extension="jpeg" ContentType="image/jpeg"/>'
     overrides = (
         '<Override PartName="/ppt/presentation.xml" '
         'ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>'
@@ -426,20 +497,8 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "barmoq_izi_skanerlari.pptx"
     n = len(SLIDES)
 
-    # Rasmlarni oldindan olish
-    media = []  # (filename, bytes)
-    media_exts = set()
-    slide_img_targets = []
-    for idx, data in enumerate(SLIDES):
-        print("Slayd %d/%d rasmi: %s" % (idx + 1, n, data["title"]))
-        img_bytes, ext = fetch_image(data["image"], idx)
-        fname = "image%d.%s" % (idx + 1, "png" if ext == "png" else "jpeg")
-        media.append((fname, img_bytes))
-        media_exts.add("png" if ext == "png" else "jpeg")
-        slide_img_targets.append(fname)
-
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("[Content_Types].xml", content_types_xml(media_exts))
+        z.writestr("[Content_Types].xml", content_types_xml())
         z.writestr("_rels/.rels", ROOT_RELS)
         z.writestr("docProps/core.xml", CORE_XML)
         z.writestr("docProps/app.xml", APP_XML)
@@ -450,13 +509,11 @@ def main():
         z.writestr("ppt/slideMasters/_rels/slideMaster1.xml.rels", SLIDE_MASTER_RELS)
         z.writestr("ppt/slideLayouts/slideLayout1.xml", SLIDE_LAYOUT_XML)
         z.writestr("ppt/slideLayouts/_rels/slideLayout1.xml.rels", SLIDE_LAYOUT_RELS)
-        for fname, data_bytes in media:
-            z.writestr("ppt/media/%s" % fname, data_bytes)
         for idx, data in enumerate(SLIDES):
-            shapes = build_slide_shapes(data, idx, "rId2")
+            print("Slayd %d/%d: %s" % (idx + 1, n, data["title"]))
+            shapes = build_slide_shapes(data, idx)
             z.writestr("ppt/slides/slide%d.xml" % (idx + 1), slide_xml(shapes))
-            z.writestr("ppt/slides/_rels/slide%d.xml.rels" % (idx + 1),
-                       slide_rels_xml(slide_img_targets[idx]))
+            z.writestr("ppt/slides/_rels/slide%d.xml.rels" % (idx + 1), slide_rels_xml())
 
     print("\nTayyor: %s" % os.path.abspath(out))
     print("Slaydlar soni: %d" % n)

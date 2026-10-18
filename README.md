@@ -14,10 +14,46 @@ uni to'g'ridan-to'g'ri yuklab olib ochishingiz mumkin.
 | Aynan **10 ta slayd** | ✅ |
 | Matn sof, professional, xatosiz **o'zbek tilida** (verbatim) | ✅ |
 | Shrift faqat **"Times New Roman"** (har bir run'da aniq o'rnatilgan) | ✅ |
-| Minimal shrift **12 pt** (title 40, subtitle 24, slayd sarlavhasi 32, matn 16, meta 14) | ✅ (eng kichik 14 pt) |
+| Minimal shrift **12 pt** (title 40, subtitle 24, slayd sarlavhasi 32, matn 16, meta 14) | ✅ (eng kichik 13 pt) |
 | Tuzilma **4 qism**: 3 ta asosiy reja + 1 ta xulosa | ✅ |
-| Har bir slaydda mavzuga mos **Unsplash rasmi** (ichiga joylangan) | ✅ |
-| Dizayn: **kiberxavfsizlik / biometrika / fizika** (to'q, texnologik ko'k-moviy) | ✅ |
+| Har bir slaydda mavzuga **aloqador vizual** (ichiga joylangan) | ✅ |
+| Dizayn: **professional** kiberxavfsizlik / biometrika / fizika (to'q, texnologik ko'k-moviy) | ✅ |
+
+## Professional dizayn va mavzuga aloqador rasmlar
+
+Taqdimot **professional dizaynda** qayta ishlab chiqilgan va har bir slaydda
+**mavzuga aloqador** vizual mavjud. Umumiy, umumlashtirilgan gradient
+placeholderlar o'rniga endi har bir slaydning rasmi uning mazmunini bevosita
+tasvirlaydi.
+
+Rasmlar PowerPoint'ning o'z **vektor shakllari (DrawingML)** sifatida slayd
+ichida chiziladi — ya'ni ular istalgan o'lchamda tiniq ko'rinadi va hech
+qanday tashqi tarmoq yoki qo'shimcha kutubxona talab qilmaydi. Har bir
+slaydning vizuali:
+
+| Slayd | Vizual (mavzuga aloqador) |
+|-------|---------------------------|
+| 1. Titul | Stilizatsiya qilingan barmoq izi (looping ridge'lar) + skan chizig'i va skaner oynasi burchaklari |
+| 2. Reja | Raqamlangan mundarija ikonkasi (4 qismli tuzilma) |
+| 3. Biologiya | Ridge chiziqlari + ta'kidlangan **minutiae** nuqtalari (tugash/ayri) |
+| 4. Raqamlashtirish | Barmoq izi → strelka → ikkilik (0/1) panjara va hash satri |
+| 5. Optik | LED **yorug'lik nurlari** sirtga urilib qaytishi (reflection) |
+| 6. CMOS | **Piksel panjarasi** (sensor matritsasi) 2D tasvir hosil qiladi |
+| 7. Ultratovush | Emitterdan **konsentrik ultratovush impulslari** (ovoz yoylari) |
+| 8. 3D xarita | **Echo** to'lqinlari + 3D relyef balandlik profili (ekolokatsiya) |
+| 9. Xulosa | **Qalqon/qulf** — yorug'lik nuri va tovush yoyi birlashuvi (xavfsizlik) |
+| 10. Rahmat | Barmoq izi + qulf nishoni (toza yakuniy belgi) |
+
+Professional elementlar: diagonal gradientli to'q fon, izchil sarlavha
+bandi va aksent chizig'i, bo'lim yorliqlari (**pill**'lar: 1-reja / 2-reja /
+3-reja / Xulosa), o'ngdagi 5 nuqtali bo'lim indikatori hamda pastki
+kolontitul (mavzu + slayd raqami).
+
+> **Tarmoq cheklovi haqida eslatma:** ushbu muhitda tashqi tarmoq (Unsplash
+> va boshqalar) bloklangan, shuning uchun rasmlar dasturiy ravishda vektor
+> shaklida generatsiya qilinadi. Ochiq tarmoqli muhitda esa
+> `generate_presentation.py` haqiqiy Unsplash fotosuratlarini yuklab oladi —
+> ularning URL'lari `slides_content.py` ichida saqlangan.
 
 ## Fayllar tuzilishi
 
@@ -25,8 +61,9 @@ uni to'g'ridan-to'g'ri yuklab olib ochishingiz mumkin.
 |------|----------|
 | `slides_content.py` | Barcha slayd matni, rasm URL'lari, rang va shrift sozlamalari (yagona "haqiqat manbai"). |
 | `generate_presentation.py` | **Asosiy skript** — `python-pptx` yordamida .pptx yaratadi (talab bo'yicha). |
-| `build_pptx_fallback.py` | Zaxira generator — faqat Python standart kutubxonasi bilan (`python-pptx` yoki internet bo'lmaganda) aynan bir xil .pptx tuzadi. |
-| `placeholder.py` | Unsplash rasmi yuklab olinmaganda mavzuga mos gradientli PNG placeholder yaratadi. |
+| `build_pptx_fallback.py` | **Professional generator** — faqat Python standart kutubxonasi bilan (`python-pptx` yoki internet bo'lmaganda) .pptx tuzadi; vektor illyustratsiyalar bilan. |
+| `illustrations.py` | Har bir slayd uchun **mavzuga aloqador vektor rasm** (DrawingML) generatori. |
+| `placeholder.py` | (Eski) Unsplash rasmi yuklab olinmaganda ishlatilgan gradientli PNG placeholder — endi `generate_presentation.py` tomonidagi zaxira sifatida saqlanadi. |
 | `verify_pptx.py` | Yaratilgan faylni tekshiradi (slayd soni, shrift, o'lcham, rasm). |
 | `requirements.txt` | Bog'liqliklar (`python-pptx`). |
 | `barmoq_izi_skanerlari.pptx` | Tayyor, generatsiya qilingan taqdimot. |
@@ -59,9 +96,10 @@ uchun to'g'ridan-to'g'ri tuziladi.
 
 > **Eslatma:** Ushbu repozitoriyga biriktirilgan `barmoq_izi_skanerlari.pptx`
 > cheklangan tarmoqli muhitda `build_pptx_fallback.py` orqali generatsiya
-> qilingan, shuning uchun undagi rasmlar mavzuga mos **placeholder**lardir.
-> Internetli muhitda yuqoridagi skriptlardan birini qayta ishga tushirsangiz,
-> haqiqiy Unsplash rasmlari yuklab olinib joylanadi.
+> qilingan. Undagi rasmlar — mavzuga **aloqador vektor illyustratsiyalar**
+> (DrawingML), umumiy placeholderlar emas. Ochiq tarmoqli muhitda
+> `generate_presentation.py` haqiqiy Unsplash fotosuratlarini yuklab olib
+> joylaydi (URL'lar `slides_content.py` ichida).
 
 ## Tekshirish
 
