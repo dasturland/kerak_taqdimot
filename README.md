@@ -16,7 +16,25 @@ issiqlik ajralib chiqadi va kulerlar yordamida sovutish fizikasi
   kattaroq).
 - Qorong'u **kiber / kompyuter arxitekturasi / termodinamika** dizayni:
   issiqlik slaydlarida to'q sariq/qizil urg'u, sovutish slaydlarida ko'k/havorang.
-- Har bir slaydga mavzuga mos rasm (Unsplash) yoki placeholder.
+- Har bir slaydga mavzuga mos rasm (Unsplash) yoki chizilgan motivli placeholder.
+
+## Professional dizayn elementlari
+
+Taqdimot shunchaki tekis bitta urg'u chizig'idan iborat emas — har bir
+kontent slaydida:
+
+- Yuqorida **urg'u rangli sarlavha bandi** (header band) va sarlavha ostida
+  ingichka **urg'u chizig'i** (underline).
+- Pastda **footer tasma**: chapda deck yorlig'i
+  ("Kompyuter qizishi va sovutish fizikasi"), o'ngda slayd raqami
+  (masalan `3 / 10`).
+- Ro'yxat elementlari oldida rangli **kvadrat marker**.
+- Rasm uchun **urg'u ramkali panel**: haqiqiy rasm mavjud bo'lsa panelni
+  to'liq qoplaydi (crop-to-fit, cho'zilmaydi), aks holda chizilgan
+  **chip yoki radiator motivli** (konsentrik to'rtburchaklar / qanotchalar)
+  professional placeholder karta va o'zbekcha izoh chiqadi.
+- Titul (1-slayd) va rahmat (10-slayd) alohida **markazlashtirilgan hero**
+  ko'rinishida.
 
 ## Talablar (dependencies)
 
@@ -63,11 +81,15 @@ Har bir slayd uchun skript tegishli Unsplash URL ni yuklab olishga harakat
 qiladi (`requests` mavjud bo'lsa u orqali, aks holda `urllib`). Yuklab olingan
 rasmlar `images/` katalogiga saqlanadi (bu katalog `.gitignore` da).
 
+Rasm topilsa, u rasm panelini to'liq qoplaydigan qilib (crop-to-fit)
+joylashtiriladi — rasm cho'zilmaydi, balki panelga sig'maydigan chetlari
+qirqiladi.
+
 Agar yuklab olish muvaffaqiyatsiz bo'lsa (tarmoq yopiq, 404, timeout va h.k.),
-skript **qulamaydi** — o'rniga slayd mavzusiga mos bir rangli
-**placeholder to'rtburchak** (nomli ramka) qo'yiladi. Placeholder yorlig'i ham
-**o'zbek tilida** ("Rasm: ...") bo'ladi, shunda tarmoqsiz qurishda butun
-taqdimot sof o'zbekcha qoladi.
+skript **qulamaydi** — o'rniga slayd mavzusiga mos, chizilgan chip/radiator
+motivli **professional placeholder karta** (urg'u ramkali) qo'yiladi.
+Placeholder izohi ham **o'zbek tilida** ("Rasm: ...") bo'ladi, shunda
+tarmoqsiz qurishda butun taqdimot sof o'zbekcha qoladi.
 
 Yuklab olingan rasm turi (JPEG, PNG, WebP, GIF, BMP) baytlar sehrli belgisi
 (magic bytes), so'ng HTTP `Content-Type`, oxirida URL kengaytmasi bo'yicha
