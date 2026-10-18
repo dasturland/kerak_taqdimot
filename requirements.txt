@@ -1,0 +1,5 @@
+# Asosiy skript (generate_presentation.py) uchun bog'liqlik.
+python-pptx==1.0.2
+
+# Unsplash rasmlarini yuklab olish uchun (ixtiyoriy, urllib ham ishlaydi).
+requests==2.32.3
