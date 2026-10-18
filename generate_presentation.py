@@ -230,10 +230,15 @@ def build_content_slide(prs, data, idx):
         p = tf.paragraphs[0] if first else tf.add_paragraph()
         is_bullet = line.strip().startswith("-")
         if is_bullet:
-            # bullet qatorlari: COLOR_BODY, kichik chekinish bilan
+            # bullet qatorlari: COLOR_BODY, kichik chekinish bilan.
+            # build_pptx_fallback.py marL="256032" indent="0" (0.28") emitadi;
+            # bo'sh layoutda (slide_layouts[6]) 2-daraja ro'yxat uslubi
+            # aniqlanmagani uchun p.level=1 ga tayanmasdan paragrafning chap
+            # chekinishini aniq o'rnatamiz — ikkala generator bir xil chekinadi.
             p.space_before = Pt(4)
             p.space_after = Pt(10)
-            p.level = 1
+            p.paragraph_format.left_indent = Inches(0.28)
+            p.paragraph_format.first_line_indent = Inches(0)
             set_run(p.add_run(), line, SIZE_BODY, COLOR_BODY)
         else:
             # sarlavha qatorlari: qalin, COLOR_ACCENT
