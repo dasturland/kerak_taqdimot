@@ -7,12 +7,15 @@ chiqaradi, ammo python-pptx o'rnatilmagan yoki internet cheklangan muhitlar
 uchun mo'ljallangan. .pptx fayli OOXML (Office Open XML) formatidagi ZIP
 to'plami bo'lgani uchun uni to'g'ridan-to'g'ri `zipfile` yordamida tuzamiz.
 
+Mavzu: "Fleshkalar (USB) qanday qilib ma'lumot saqlaydi? Elektr zaryadlari
+ko'rinishida axborot saqlash fizikasi".
+
 Natija:
   * Aynan 10 ta slayd.
   * Har bir run'da shrift "Times New Roman" aniq o'rnatilgan.
   * Minimal shrift 12 pt (title 40, subtitle 24, slayd sarlavhasi 32, ...).
   * Har bir slaydga Unsplash rasmi joylanadi (yuklab olinmasa placeholder).
-  * To'q, texnologik rang sxemasi.
+  * To'q, texnologik rang sxemasi (mikroelektronika / kvant fizikasi).
 
 Foydalanish:
     python3 build_pptx_fallback.py [chiqish.pptx]
@@ -374,7 +377,7 @@ CORE_XML = (
     'xmlns:dc="http://purl.org/dc/elements/1.1/" '
     'xmlns:dcterms="http://purl.org/dc/terms/" '
     'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
-    '<dc:title>Barmoq izi skanerlari qanday ishlaydi?</dc:title>'
+    '<dc:title>Fleshkalar (USB) qanday ishlaydi?</dc:title>'
     '<dc:creator>Toshbo\u02bbriyeva Marjona</dc:creator>'
     '<cp:lastModifiedBy>Toshbo\u02bbriyeva Marjona</cp:lastModifiedBy>'
     '</cp:coreProperties>'
@@ -423,7 +426,7 @@ def content_types_xml(media_exts):
 
 
 def main():
-    out = sys.argv[1] if len(sys.argv) > 1 else "barmoq_izi_skanerlari.pptx"
+    out = sys.argv[1] if len(sys.argv) > 1 else "fleshka_usb_taqdimot.pptx"
     n = len(SLIDES)
 
     # Rasmlarni oldindan olish

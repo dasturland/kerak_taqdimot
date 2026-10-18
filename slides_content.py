@@ -9,13 +9,15 @@ Barcha matn aynan foydalanuvchi bergan ko'rinishda (o'zbek tilida, apostroflar
 bilan) saqlangan. Hech qanday o'zgartirish yoki qayta ifodalash yo'q.
 """
 
-# Umumiy dizayn sozlamalari (kiberxavfsizlik / biometrika / fizika mavzusi)
+# Umumiy dizayn sozlamalari (kiber / mikroelektronika / xotira qurilmalari /
+# kvant fizikasi mavzusi)
 FONT_NAME = "Times New Roman"
 
 # Rang sxemasi (RGB) - to'q, texnologik ko'k/moviy urg'u bilan
+# (mikrosxema platasi, kremniy kristali va kvant tunnellanish mavzusiga mos)
 COLOR_BG_DARK = (0x0B, 0x1E, 0x33)      # to'q ko'k fon
 COLOR_PANEL = (0x12, 0x2A, 0x45)        # matn paneli uchun biroz ochiqroq
-COLOR_ACCENT = (0x00, 0xC2, 0xD1)       # moviy / tech aksent (yorug'lik + tovush)
+COLOR_ACCENT = (0x00, 0xC2, 0xD1)       # moviy / tech aksent (elektr zaryadi)
 COLOR_ACCENT2 = (0x3B, 0x82, 0xF6)      # ko'k aksent
 COLOR_TITLE = (0xFF, 0xFF, 0xFF)        # oq sarlavha
 COLOR_BODY = (0xE2, 0xE8, 0xF0)         # ochiq kulrang matn
@@ -33,9 +35,9 @@ SIZE_META = 14         # titul/yakuniy slayddagi ma'lumot (12 dan katta)
 SLIDES = [
     {
         "kind": "title",
-        "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1000&q=80",
-        "title": "Barmoq izi skanerlari qanday ishlaydi?",
-        "subtitle": "Optik va ultratovush to'lqinlari yordamida biometrik axborotni tanib olish fizikasi.",
+        "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80",
+        "title": "Fleshkalar (USB) qanday ishlaydi?",
+        "subtitle": "Hech qanday harakatlanuvchi qismlarsiz ma'lumotlarni elektr zaryadlari ko'rinishida saqlash fizikasi.",
         "lines": [
             "Universitet: Jizzax davlat pedagogika universiteti tabiiy fanlar oliy maktabi",
             "Fan: Axborot tizimlari",
@@ -45,73 +47,83 @@ SLIDES = [
     },
     {
         "kind": "content",
-        "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=80",
+        "image": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1000&q=80",
         "title": "Taqdimot rejasi",
         "lines": [
-            "1-reja. Barmoq izi biologiyasi va uni raqamlashtirish (Minutiae nuqtalari).",
-            "2-reja. Optik skanerlar fizikasi: Yorug'lik nurlari va 2D tasvir.",
-            "3-reja. Ultratovushli (Ultrasonic) skanerlar: Ovoz to'lqinlari orqali 3D xarita.",
-            "Xulosa. Biometrik xavfsizlikning zamonaviy axborot tizimlaridagi ahamiyati.",
+            "1-reja. NAND xotira arxitekturasi va harakatlanuvchi qismlarning yo'qligi.",
+            "2-reja. Suzuvchi zulfin (Floating Gate) tranzistorlari fizikasi.",
+            "3-reja. Axborotni yozish va o'chirish: Kvant tunnellanish effekti.",
+            "Xulosa. Flesh xotiralarning zamonaviy axborot tizimlaridagi ahamiyati.",
         ],
     },
     {
         "kind": "content",
-        "image": "https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=1000&q=80",
-        "title": "1. Biologiya va axborotning birlashuvi",
+        "image": "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=1000&q=80",
+        "title": "1. NAND Flash xotira arxitekturasi",
         "lines": [
-            "Barmoq izimiz \u2014 bu inson tanasidagi tabiiy axborot tashuvchi noyob \"kod\" hisoblanadi.",
-            "- Tepaliklar va chuqurliklar (Ridges and Valleys): Barmog'imiz terisi tekis emas. U qabariq chiziqlar (tepaliklar) va ular orasidagi bo'shliqlardan (chuqurliklar) iborat.",
-            "- Minutiae nuqtalari: Skaner barmoqning umumiy rasmini emas, balki chiziqlar uzilgan, birlashgan yoki tugagan maxsus kesishuv nuqtalarini (Minutiae) izlaydi va ularni matematik algoritmga o'giradi.",
+            "Fleshkalar (USB) va SSD disklar qattiq disklar (HDD) kabi aylanuvchi magnit plastinalarga ega emas. Ularning ichida mutlaqo harakatlanuvchi qismlar yo'q.",
+            "Solid-State:",
+            "- Axborot faqatgina elektr toklari yordamida qattiq jismli (Solid-State) mikrosxemalarda saqlanadi.",
+            "NAND darvozalari:",
+            "- Fleshkaning ichidagi asosiy xotira chipi \"NAND\" deb ataluvchi milliardlab mitti tranzistorlardan tashkil topgan bo'lib, ular barcha ma'lumotlarni 0 va 1 ko'rinishida saqlaydi.",
+        ],
+    },
+    {
+        "kind": "content",
+        "image": "https://images.unsplash.com/photo-1591405351990-4726e331f141?auto=format&fit=crop&w=1000&q=80",
+        "title": "Mikro dunyodagi minglab rasmlar",
+        "lines": [
+            "Kichkina USB qurilmasiga minglab yuqori sifatli rasmlar qanday sig'adi?",
+            "- Buning siri tranzistorlarning o'lchamidadir. Zamonaviy fleshkalardagi bitta tranzistor (ma'lumot saqlovchi katakcha) inson sochidan minglab marta ingichka bo'ladi.",
+            "- Ularning milliardlab donasi bitta kremniy (Silicon) kristaliga zichlashtiriladi. Kompyuterdan kelgan har bir rasm va hujjat aynan shu mitti katakchalarga elektr zaryadi tariqasida taqsimlanadi.",
+        ],
+    },
+    {
+        "kind": "content",
+        "image": "https://images.unsplash.com/photo-1631556097152-c39479bbff93?auto=format&fit=crop&w=1000&q=80",
+        "title": "2. Suzuvchi zulfin (Floating Gate)",
+        "lines": [
+            "Fleshkadagi ma'lumot elektr toki uzilganda (kompyuterdan sug'urilganda) nega o'chib ketmaydi?",
+            "Sababi oddiy tranzistorlardan farqli o'laroq, fleshkalar \"Suzuvchi zulfin\" (Floating Gate) deb nomlanuvchi maxsus tranzistorlardan foydalanadi.",
+            "Izolyatsiya:",
+            "- Bu zulfin elektr tokini o'tkazmaydigan o'ta yupqa oksid qatlami bilan har tomondan to'liq o'rab olingan (qamalgan).",
+            "Qopqonga tushgan elektronlar:",
+            "- Agar elektronlar bu zulfin ichiga kiritilsa, ular u yerdan chiqa olmay, yillab qamalib qoladi.",
         ],
     },
     {
         "kind": "content",
         "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1000&q=80",
-        "title": "Biometrik axborotni raqamlashtirish",
+        "title": "Zaryadni saqlash: 0 va 1 larni ifodalash",
         "lines": [
-            "Siz barmog'ingizni ekranga qo'yganingizda, axborot tizimi uni to'g'ridan-to'g'ri rasm sifatida saqlamaydi.",
-            "- Shifrlash (Hashing): Topilgan kesishuv nuqtalari orasidagi masofa va burchaklar hisoblab chiqiladi. Bu geometrik ma'lumotlar murakkab shifr (Xesh kod - masalan, \"A7F90B...\") ko'rinishiga keltiriladi.",
-            "- Tekshirish: Telefonni ochishda joriy barmoq izidan olingan shifr, xotiradagi (Secure Enclave'dagi) shifr bilan solishtiriladi. Ikkisi mos kelsa, telefon ochiladi.",
+            "Zulfin ichiga elektronlar kiritilgani yoki kiritilmagani axborotni o'qish imkonini beradi.",
+            "Mantiqiy \"0\":",
+            "- Suzuvchi zulfinda elektronlar qamalgan bo'lsa, ular tranzistor orqali asosiy elektr tokining o'tishiga to'sqinlik qiladi. Kompyuter buni \"0\" deb o'qiydi.",
+            "Mantiqiy \"1\":",
+            "- Zulfinda elektronlar yo'q bo'lsa, elektr toki bemalol o'tadi va kompyuter buni \"1\" deb qabul qiladi. Shu tariqa fayllar fizik holatga ko'chadi.",
         ],
     },
     {
         "kind": "content",
-        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=80",
-        "title": "2. Optik skanerlar: Yorug'lik fizikasi",
+        "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1000&q=80",
+        "title": "3. Kvant tunnellanish effekti",
         "lines": [
-            "Optik skanerlar qadimiyroq, ammo juda keng tarqalgan texnologiya bo'lib, ular asosan yorug'lik fizikasi yordamida ishlaydi.",
-            "- Chaqnash (Illumination): Barmog'ingizni ekranga yoki tugmaga qo'yganingizda, ostki qismdan kuchli yorug'lik (LED) sochiladi. Bu yorug'lik barmoq izini to'liq yoritib beradi.",
-            "- To'liq ichki qaytish: Barmoq terisi yorug'likni qaytaradi, bo'shliqlar (chuqurliklar) esa qorong'i bo'lib qoladi.",
+            "Agar zulfin izolyator bilan to'liq o'ralgan bo'lsa, elektronlar uning ichiga qanday kiradi?",
+            "Aynan shu yerda Kvant mexanikasi ishga tushadi! Kompyuter fleshkaga fayl yozayotganda tranzistorga kuchli kuchlanish (Volt) beradi.",
+            "Fauler-Nordxeym (Fowler-Nordheim) tunnellanishi:",
+            "- Kuchli elektr maydoni ta'sirida elektronlar \"kutilmaganda\" o'tib bo'lmas oksid to'sig'idan teshib o'tib, zulfin ichiga tushib qoladi. Bu mo'jizaviy kvant hodisasi axborotni fleshkaga yozish imkonini beradi.",
         ],
     },
     {
         "kind": "content",
-        "image": "https://images.unsplash.com/photo-1592434448555-520e5c9a752f?auto=format&fit=crop&w=1000&q=80",
-        "title": "Optik tasvirni muhrlash (CMOS)",
+        "image": "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=1000&q=80",
+        "title": "Ma'lumotlarni o'chirish va fleshkaning yeyilishi",
         "lines": [
-            "Yorug'lik barmoqdan qaytgach, xuddi kameradagi kabi maxsus sensorga (CMOS yoki CCD) borib uriladi.",
-            "- 2D Tasvir: Sensor qaytgan yorug'lik asosida barmoq izining oq-qora 2 o'lchamli (2D) rasm xaritasini chizadi.",
-            "- Kamchiligi: Optik skanerlar shunchaki rasm olgani uchun, ularni ba'zan yuqori sifatli fotonusxalar yoki yasalgan sun'iy barmoqlar yordamida aldash mumkin bo'ladi. Uning xavfsizlik darajasi o'rtacha.",
-        ],
-    },
-    {
-        "kind": "content",
-        "image": "https://images.unsplash.com/photo-1518932945647-7a1c969f8be2?auto=format&fit=crop&w=1000&q=80",
-        "title": "3. Ultratovush (Ultrasonic) skanerlar",
-        "lines": [
-            "Zamonaviy flagman smartfonlarda (masalan, Samsung Galaxy S seriyasi) ishlatiladigan bu texnologiya yorug'likdan emas, balki tovush to'lqinlaridan foydalanadi.",
-            "- Pyezoelektrik effekt: Skaner ostidagi datchik inson qulog'i eshitmaydigan yuqori chastotali (ultratovush) impuls tarqatadi.",
-            "- Bu to'lqinlar displey orqali o'tib, to'g'ridan-to'g'ri barmog'ingizga borib uriladi va aks-sado (Echo) bo'lib orqaga qaytadi.",
-        ],
-    },
-    {
-        "kind": "content",
-        "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80",
-        "title": "Ovoz to'lqinlari orqali 3D xarita (Ekolokatsiya)",
-        "lines": [
-            "Ultratovush to'lqinlarining qaytish vaqti fizikaning ajoyib qonuniyatiga bo'ysunadi.",
-            "- Qaytish farqi: To'lqin barmoqning bo'rtib chiqqan qismiga urilsa tezroq qaytadi, chuqurlik (havo bo'shlig'i) qismiga urilsa kechroq qaytadi.",
-            "- 3D Model: Sensor ushbu vaqt farqlarini (millisoniyalarni) o'lchab, barmoq izining o'ta aniq 3D relyef xaritasini tuzadi. Bu usul qorong'ida ham, barmoq nam yoki kirlangan bo'lsa ham mukammal ishlaydi va uni rasmlar bilan aldab bo'lmaydi.",
+            "Ma'lumotni o'chirish uchun fleshka zulfinga teskari kuchlanish beradi va elektronlarni kvant tunnellanish orqali yana tashqariga so'rib oladi.",
+            "Eskirish (Wear out):",
+            "- Har safar elektronlar oksid qatlamidan kuch bilan teshib o'tganda, bu izolyatsiya qatlami sekin-asta yemiriladi.",
+            "Hayot sikli:",
+            "- Shu sababli USB fleshkalarning ma'lum bir yozish/o'chirish tsikli bor (odatda 10,000 dan 100,000 martagacha). Bu limit tugagach, u axborot saqlay olmay qoladi.",
         ],
     },
     {
@@ -119,16 +131,16 @@ SLIDES = [
         "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1000&q=80",
         "title": "Xulosa",
         "lines": [
-            "Xulosa qilib aytganda, barmoq izi skanerlari inson biologiyasi va fizika qonunlarining IT bilan mukammal uyg'unligidir.",
-            "Optik skanerlar yorug'lik nurlari (fotonlar) yordamida vizual xarita tuzsa, ultratovush skanerlar ovoz to'lqinlarining aks-sadosi yordamida o'ta aniq 3D model yaratadi. Bu texnologiyalar shaxsiy ma'lumotlarimiz va axborot tizimlarining xavfsizligini ta'minlashda eng ishonchli biometrik qulf bo'lib xizmat qilmoqda.",
+            "Xulosa qilib aytganda, qo'limizdagi oddiy USB fleshka shunchaki plastik bo'lak emas. U ichida milliardlab mitti qopqonlarni saqlovchi kvant fizikasining mo'jizasidir.",
+            "Kvant tunnellanish effekti kabi murakkab fizik qonuniyatlar insoniyatga ma'lumotlarni harakatlanuvchi mexanizmlarsiz, sof elektr zaryadlari ko'rinishida saqlash va bugungi tezkor axborot tizimlarini yaratish imkonini berdi.",
         ],
     },
     {
         "kind": "closing",
-        "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1000&q=80",
+        "image": "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?auto=format&fit=crop&w=1000&q=80",
         "title": "E'tiboringiz uchun rahmat!",
         "lines": [
-            "Mavzu: Barmoq izi skanerlari (Optika va Ultratovush)",
+            "Mavzu: Fleshkalar (USB) qanday qilib ma'lumot saqlaydi?",
             "Taqdimotchi: Toshbo\u02bbriyeva Marjona (242_26 - guruh)",
             "Jizzax davlat pedagogika universiteti - Axborot tizimlari fani.",
         ],

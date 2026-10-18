@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Barmoq izi skanerlari mavzusidagi 10 slaydli PPTX taqdimotini yaratadi.
+"""Fleshkalar (USB) qanday ishlaydi mavzusidagi 10 slaydli PPTX taqdimotini yaratadi.
 
 Talablar (foydalanuvchi tomonidan qat'iy belgilangan):
   * Aynan 10 ta slayd.
@@ -8,7 +8,7 @@ Talablar (foydalanuvchi tomonidan qat'iy belgilangan):
   * Shrift faqat "Times New Roman", minimal o'lcham 12 pt.
   * 4 qism tuzilmasi: 3 ta asosiy reja + 1 ta xulosa.
   * Har bir slaydda mavzuga mos Unsplash rasmi (yuklab olinib, ichiga joylanadi).
-  * Kiberxavfsizlik / biometrika / fizika (yorug'lik va tovush) dizayni.
+  * Kiber / mikroelektronika / xotira qurilmalari / kvant fizikasi dizayni.
 
 Foydalanish:
     python3 generate_presentation.py [chiqish_fayli.pptx]
@@ -195,7 +195,7 @@ def build_content_slide(prs, data, idx):
 
 
 def main():
-    out = sys.argv[1] if len(sys.argv) > 1 else "barmoq_izi_skanerlari.pptx"
+    out = sys.argv[1] if len(sys.argv) > 1 else "fleshka_usb_taqdimot.pptx"
     prs = Presentation()
     prs.slide_width = SLIDE_W
     prs.slide_height = SLIDE_H

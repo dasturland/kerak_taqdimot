@@ -15,7 +15,7 @@ import sys
 import xml.dom.minidom as minidom
 import zipfile
 
-path = sys.argv[1] if len(sys.argv) > 1 else "barmoq_izi_skanerlari.pptx"
+path = sys.argv[1] if len(sys.argv) > 1 else "fleshka_usb_taqdimot.pptx"
 errors = []
 ok = []
 

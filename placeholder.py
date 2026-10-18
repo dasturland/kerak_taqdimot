@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Mavzuga mos (kiberxavfsizlik/fizika) placeholder PNG rasmlarini yaratish.
+"""Mavzuga mos (mikroelektronika/kvant fizikasi) placeholder PNG yaratish.
 
 Faqat standart kutubxona (zlib, struct) ishlatiladi. Bu modul Unsplash
 rasmlari yuklab olinmagan holatda zaxira sifatida chiroyli gradientli,
@@ -9,16 +9,17 @@ import math
 import struct
 import zlib
 
-# Har bir slayd uchun mavzuga mos rang palitralari (ko'k/moviy texnologik)
+# Har bir slayd uchun mavzuga mos rang palitralari (ko'k/moviy texnologik -
+# mikrosxema, kremniy kristali, elektr zaryadi va kvant tunnellanish mavzusi)
 PALETTES = [
-    ((11, 30, 51), (0, 194, 209)),    # 1 titul
+    ((11, 30, 51), (0, 194, 209)),    # 1 titul (USB fleshka)
     ((9, 20, 40), (59, 130, 246)),    # 2 reja
-    ((20, 14, 40), (0, 194, 209)),    # 3 biologiya
-    ((5, 25, 35), (34, 197, 94)),     # 4 raqamlashtirish
-    ((40, 25, 10), (251, 191, 36)),   # 5 optik / yorug'lik
-    ((15, 20, 35), (99, 179, 237)),   # 6 CMOS
-    ((25, 10, 40), (167, 139, 250)),  # 7 ultratovush
-    ((8, 28, 44), (0, 212, 255)),     # 8 3D ekolokatsiya
+    ((20, 14, 40), (0, 194, 209)),    # 3 NAND arxitekturasi
+    ((5, 25, 35), (34, 197, 94)),     # 4 kremniy kristali / mikro dunyo
+    ((40, 25, 10), (251, 191, 36)),   # 5 suzuvchi zulfin (Floating Gate)
+    ((15, 20, 35), (99, 179, 237)),   # 6 zaryad: 0 va 1
+    ((25, 10, 40), (167, 139, 250)),  # 7 kvant tunnellanish effekti
+    ((8, 28, 44), (0, 212, 255)),     # 8 o'chirish / yeyilish
     ((11, 30, 51), (0, 194, 209)),    # 9 xulosa
     ((20, 10, 30), (59, 130, 246)),   # 10 yakun
 ]

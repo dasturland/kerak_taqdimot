@@ -1,10 +1,11 @@
-# Barmoq izi skanerlari qanday ishlaydi? (PPTX taqdimot generatori)
+# Fleshkalar (USB) qanday ishlaydi? (PPTX taqdimot generatori)
 
-Ushbu repozitoriy **"Barmoq izi skanerlari qanday ishlaydi? Optik va ultratovush
-to'lqinlari fizikasi"** mavzusidagi 10 slaydli professional PowerPoint
-taqdimotini avtomatik generatsiya qiluvchi skriptlardan iborat.
+Ushbu repozitoriy **"Fleshkalar (USB) qanday qilib ma'lumot saqlaydi? Elektr
+zaryadlari ko'rinishida axborot saqlash fizikasi"** mavzusidagi 10 slaydli
+professional PowerPoint taqdimotini avtomatik generatsiya qiluvchi
+skriptlardan iborat.
 
-Tayyor fayl: **[`barmoq_izi_skanerlari.pptx`](barmoq_izi_skanerlari.pptx)** —
+Tayyor fayl: **[`fleshka_usb_taqdimot.pptx`](fleshka_usb_taqdimot.pptx)** —
 uni to'g'ridan-to'g'ri yuklab olib ochishingiz mumkin.
 
 ## Qat'iy talablarga muvofiqlik
@@ -17,7 +18,7 @@ uni to'g'ridan-to'g'ri yuklab olib ochishingiz mumkin.
 | Minimal shrift **12 pt** (title 40, subtitle 24, slayd sarlavhasi 32, matn 16, meta 14) | ✅ (eng kichik 14 pt) |
 | Tuzilma **4 qism**: 3 ta asosiy reja + 1 ta xulosa | ✅ |
 | Har bir slaydda mavzuga mos **Unsplash rasmi** (ichiga joylangan) | ✅ |
-| Dizayn: **kiberxavfsizlik / biometrika / fizika** (to'q, texnologik ko'k-moviy) | ✅ |
+| Dizayn: **kiber / mikroelektronika / xotira qurilmalari / kvant fizikasi** (to'q, texnologik ko'k-moviy) | ✅ |
 
 ## Fayllar tuzilishi
 
@@ -29,7 +30,7 @@ uni to'g'ridan-to'g'ri yuklab olib ochishingiz mumkin.
 | `placeholder.py` | Unsplash rasmi yuklab olinmaganda mavzuga mos gradientli PNG placeholder yaratadi. |
 | `verify_pptx.py` | Yaratilgan faylni tekshiradi (slayd soni, shrift, o'lcham, rasm). |
 | `requirements.txt` | Bog'liqliklar (`python-pptx`). |
-| `barmoq_izi_skanerlari.pptx` | Tayyor, generatsiya qilingan taqdimot. |
+| `fleshka_usb_taqdimot.pptx` | Tayyor, generatsiya qilingan taqdimot. |
 
 ## Ishga tushirish
 
@@ -57,7 +58,7 @@ Bu variant hech qanday tashqi kutubxonaga muhtoj emas (faqat `zipfile`,
 `zlib` kabi standart modullar). `.pptx` fayli OOXML ZIP to'plami bo'lgani
 uchun to'g'ridan-to'g'ri tuziladi.
 
-> **Eslatma:** Ushbu repozitoriyga biriktirilgan `barmoq_izi_skanerlari.pptx`
+> **Eslatma:** Ushbu repozitoriyga biriktirilgan `fleshka_usb_taqdimot.pptx`
 > cheklangan tarmoqli muhitda `build_pptx_fallback.py` orqali generatsiya
 > qilingan, shuning uchun undagi rasmlar mavzuga mos **placeholder**lardir.
 > Internetli muhitda yuqoridagi skriptlardan birini qayta ishga tushirsangiz,
@@ -66,7 +67,7 @@ uchun to'g'ridan-to'g'ri tuziladi.
 ## Tekshirish
 
 ```bash
-python3 verify_pptx.py barmoq_izi_skanerlari.pptx
+python3 verify_pptx.py fleshka_usb_taqdimot.pptx
 ```
 
 Chiqishda slaydlar soni (10), har bir run'da "Times New Roman", minimal
@@ -74,9 +75,9 @@ shrift o'lchami (>= 12 pt) va 10 ta joylangan rasm tasdiqlanadi.
 
 ## Taqdimot tuzilmasi (4 qism)
 
-1. **1-reja:** Barmoq izi biologiyasi va uni raqamlashtirish (3- va 4-slaydlar).
-2. **2-reja:** Optik skanerlar fizikasi — yorug'lik nurlari va 2D tasvir (5- va 6-slaydlar).
-3. **3-reja:** Ultratovushli skanerlar — ovoz to'lqinlari orqali 3D xarita (7- va 8-slaydlar).
-4. **Xulosa:** Biometrik xavfsizlikning ahamiyati (9-slayd) + minnatdorchilik slaydi (10-slayd).
+1. **1-reja:** NAND xotira arxitekturasi va harakatlanuvchi qismlarning yo'qligi (3- va 4-slaydlar).
+2. **2-reja:** Suzuvchi zulfin (Floating Gate) tranzistorlari fizikasi (5- va 6-slaydlar).
+3. **3-reja:** Axborotni yozish va o'chirish — Kvant tunnellanish effekti (7- va 8-slaydlar).
+4. **Xulosa:** Flesh xotiralarning zamonaviy axborot tizimlaridagi ahamiyati (9-slayd) + minnatdorchilik slaydi (10-slayd).
 
 Titul (1-slayd) va mundarija (2-slayd) ushbu qismlarni ochib beradi.
