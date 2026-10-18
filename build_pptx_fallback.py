@@ -85,7 +85,7 @@ def run_xml(text, size_pt, color, bold=False, italic=False):
     )
 
 
-def para_xml(runs_xml, align=None, space_before=None, space_after=None):
+def para_xml(runs_xml, align=None, space_before=None, space_after=None, indent_in=None):
     ppr = ''
     inner = ''
     if space_before is not None:
@@ -93,8 +93,9 @@ def para_xml(runs_xml, align=None, space_before=None, space_after=None):
     if space_after is not None:
         inner += '<a:spcAft><a:spcPts val="%d"/></a:spcAft>' % int(space_after * 100)
     algn = ' algn="%s"' % align if align else ''
-    if inner or algn:
-        ppr = '<a:pPr%s>%s</a:pPr>' % (algn, inner)
+    marl = ' marL="%d" indent="0"' % int(indent_in * EMU) if indent_in else ''
+    if inner or algn or marl:
+        ppr = '<a:pPr%s%s>%s</a:pPr>' % (algn, marl, inner)
     return '<a:p>%s%s</a:p>' % (ppr, runs_xml)
 
 
@@ -126,9 +127,10 @@ def textbox_shape(sid, name, x, y, cx, cy, paras_xml, anchor="t"):
 
 
 def pic_shape(sid, name, rid, x, y, cx, cy):
+    # Rasm aspekt nisbati saqlanadi (noChangeAspect="1"), cho'zilish yo'q.
     return (
         '<p:pic><p:nvPicPr><p:cNvPr id="%d" name="%s"/><p:cNvPicPr>'
-        '<a:picLocks noChangeAspect="0"/></p:cNvPicPr><p:nvPr/></p:nvPicPr>'
+        '<a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr>'
         '<p:blipFill><a:blip r:embed="%s"/><a:stretch><a:fillRect/></a:stretch></p:blipFill>'
         '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm>'
         '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>'
@@ -139,6 +141,33 @@ def pic_shape(sid, name, rid, x, y, cx, cy):
 # ----------------------------------------------------------------------------
 # Slayd tuzuvchilari
 # ----------------------------------------------------------------------------
+
+def fit_square(box_x, box_y, box_cx, box_cy):
+    """Kvadrat (1000x1000) rasmni berilgan katak ichiga aspektni saqlab joylaydi.
+
+    Rasm cho'zilmasligi uchun eng kichik o'lchov bo'yicha kvadrat hosil qilib,
+    uni katak markaziga qo'yamiz (letterbox / markazlashtirish)."""
+    side = min(box_cx, box_cy)
+    off_x = box_x + (box_cx - side) // 2
+    off_y = box_y + (box_cy - side) // 2
+    return off_x, off_y, side, side
+
+
+# Content slaydlardagi qisqa mavzu futeri (bu faqat qo'shimcha navigatsiya
+# yorlig'i; slaydlardagi asosiy matn verbatim manbadan o'zgarmagan).
+FOOTER_TOPIC = "Fleshkalar (USB) qanday ishlaydi?"
+
+
+def footer_shapes(nid, idx, topic):
+    """Content slaydlar uchun nozik futer: mavzu (chapda) va 'N / 10' (o'ngda)."""
+    out = []
+    out.append(rect_shape(nid(), "footline", inch(0.6), inch(7.02), inch(12.13), inch(0.012), COLOR_PANEL))
+    left = para_xml(run_xml(topic, SIZE_META, COLOR_BODY))
+    out.append(textbox_shape(nid(), "foot_l", inch(0.6), inch(7.06), inch(9.0), inch(0.4), left, anchor="ctr"))
+    right = para_xml(run_xml("%d / 10" % (idx + 1), SIZE_META, COLOR_ACCENT, bold=True), align="r")
+    out.append(textbox_shape(nid(), "foot_r", inch(9.8), inch(7.06), inch(2.93), inch(0.4), right, anchor="ctr"))
+    return out
+
 
 def build_slide_shapes(data, idx, img_rid):
     """Slayd turiga qarab shakllar XML'ini qaytaradi."""
@@ -153,43 +182,67 @@ def build_slide_shapes(data, idx, img_rid):
     shapes.append(rect_shape(nid(), "bg", 0, 0, SLIDE_W, SLIDE_H, COLOR_BG_DARK))
 
     if data["kind"] == "title":
-        # o'ngda rasm
-        shapes.append(pic_shape(nid(), "img", img_rid, inch(7.4), 0, inch(5.933), SLIDE_H))
-        # aksent chiziq
-        shapes.append(rect_shape(nid(), "accent", inch(0.6), inch(1.2), inch(0.12), inch(2.4), COLOR_ACCENT))
+        # o'ngda rasm paneli (kvadrat rasm, markazda, aspekt saqlangan)
+        shapes.append(rect_shape(nid(), "imgpanel", inch(7.4), 0, inch(5.933), SLIDE_H, COLOR_PANEL))
+        ix, iy, iw, ih = fit_square(inch(7.4), 0, inch(5.933), SLIDE_H)
+        shapes.append(pic_shape(nid(), "img", img_rid, ix, iy, iw, ih))
+        # chapda vertikal aksent chiziq
+        shapes.append(rect_shape(nid(), "accent", inch(0.6), inch(1.2), inch(0.14), inch(2.3), COLOR_ACCENT))
         # sarlavha + kichik sarlavha
         p1 = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_TITLE, bold=True))
         p2 = para_xml(run_xml(data["subtitle"], SIZE_SUBTITLE, COLOR_ACCENT, italic=True), space_before=14)
-        shapes.append(textbox_shape(nid(), "title", inch(0.9), inch(1.1), inch(6.1), inch(2.8), p1 + p2))
+        shapes.append(textbox_shape(nid(), "title", inch(0.95), inch(1.1), inch(6.1), inch(2.8), p1 + p2))
+        # nozik ajratuvchi
+        shapes.append(rect_shape(nid(), "divider", inch(0.95), inch(4.15), inch(5.9), inch(0.012), COLOR_PANEL))
         # meta
         metas = ''.join(para_xml(run_xml(l, SIZE_META, COLOR_BODY), space_after=6) for l in data["lines"])
-        shapes.append(textbox_shape(nid(), "meta", inch(0.9), inch(4.3), inch(6.1), inch(2.8), metas))
+        shapes.append(textbox_shape(nid(), "meta", inch(0.95), inch(4.35), inch(6.1), inch(2.8), metas))
 
     elif data["kind"] == "closing":
-        shapes.append(pic_shape(nid(), "img", img_rid, 0, 0, SLIDE_W, SLIDE_H))
-        shapes.append(rect_shape(nid(), "panel", inch(1.5), inch(2.3), inch(10.33), inch(3.0), COLOR_BG_DARK, line_color=COLOR_ACCENT))
-        p = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_ACCENT, bold=True), align="ctr")
+        # to'liq ekran rasm fon sifatida (aspekt saqlanadi, markazda)
+        ix, iy, iw, ih = fit_square(0, 0, SLIDE_W, SLIDE_H)
+        shapes.append(pic_shape(nid(), "img", img_rid, ix, iy, iw, ih))
+        # markaziy panel + aksent ramka
+        shapes.append(rect_shape(nid(), "panel", inch(1.5), inch(2.2), inch(10.33), inch(3.1), COLOR_BG_DARK, line_color=COLOR_ACCENT))
+        shapes.append(rect_shape(nid(), "cbar", inch(6.17), inch(2.55), inch(1.0), inch(0.06), COLOR_ACCENT))
+        p = para_xml(run_xml(data["title"], SIZE_TITLE, COLOR_ACCENT, bold=True), align="ctr", space_before=6)
         for l in data["lines"]:
             p += para_xml(run_xml(l, SIZE_META, COLOR_BODY), align="ctr", space_before=8)
-        shapes.append(textbox_shape(nid(), "ctext", inch(1.8), inch(2.5), inch(9.7), inch(2.6), p, anchor="ctr"))
+        shapes.append(textbox_shape(nid(), "ctext", inch(1.9), inch(2.4), inch(9.53), inch(2.7), p, anchor="ctr"))
 
     else:  # content
-        shapes.append(rect_shape(nid(), "topbar", 0, inch(1.15), SLIDE_W, inch(0.05), COLOR_ACCENT))
-        shapes.append(rect_shape(nid(), "tbar", inch(0.6), inch(0.35), inch(0.12), inch(0.6), COLOR_ACCENT))
+        # --- sarlavha zonasi (title band + nozik aksent chizig'i) ---
+        shapes.append(rect_shape(nid(), "tbar", inch(0.6), inch(0.33), inch(0.14), inch(0.62), COLOR_ACCENT))
         pt = para_xml(run_xml(data["title"], SIZE_SLIDE_TITLE, COLOR_TITLE, bold=True))
-        shapes.append(textbox_shape(nid(), "title", inch(0.9), inch(0.3), inch(11.8), inch(0.9), pt, anchor="ctr"))
-        # rasm o'ngda
-        shapes.append(pic_shape(nid(), "img", img_rid, inch(8.5), inch(1.6), inch(4.3), inch(5.4)))
-        # matn paneli chapda
-        shapes.append(rect_shape(nid(), "panel", inch(0.5), inch(1.6), inch(7.7), inch(5.4), COLOR_PANEL))
+        shapes.append(textbox_shape(nid(), "title", inch(0.95), inch(0.28), inch(11.8), inch(0.78), pt, anchor="ctr"))
+        shapes.append(rect_shape(nid(), "topbar", inch(0.6), inch(1.12), inch(12.13), inch(0.04), COLOR_ACCENT))
+
+        # --- o'ngda rasm paneli (kvadrat, markazda, aspekt saqlangan) ---
+        panel_x, panel_y = inch(8.35), inch(1.45)
+        panel_cx, panel_cy = inch(4.38), inch(5.35)
+        shapes.append(rect_shape(nid(), "imgpanel", panel_x, panel_y, panel_cx, panel_cy, COLOR_PANEL, line_color=COLOR_ACCENT2))
+        pad = inch(0.18)
+        ix, iy, iw, ih = fit_square(panel_x + pad, panel_y + pad, panel_cx - 2 * pad, panel_cy - 2 * pad)
+        shapes.append(pic_shape(nid(), "img", img_rid, ix, iy, iw, ih))
+
+        # --- chapda matn paneli (keng ichki chekkalar bilan) ---
+        shapes.append(rect_shape(nid(), "panel", inch(0.5), inch(1.45), inch(7.5), inch(5.35), COLOR_PANEL))
+        shapes.append(rect_shape(nid(), "panelbar", inch(0.5), inch(1.45), inch(0.08), inch(5.35), COLOR_ACCENT))
         body = ''
         for l in data["lines"]:
             is_bullet = l.strip().startswith("-")
             if is_bullet:
-                body += para_xml(run_xml(l, SIZE_BODY, COLOR_BODY), space_after=10)
+                # bullet qatorlari: COLOR_BODY, kichik chekinish bilan
+                body += para_xml(run_xml(l, SIZE_BODY, COLOR_BODY),
+                                 space_before=4, space_after=10, indent_in=0.28)
             else:
-                body += para_xml(run_xml(l, SIZE_BODY_HEAD, COLOR_ACCENT, bold=True), space_after=10)
-        shapes.append(textbox_shape(nid(), "body", inch(0.8), inch(1.85), inch(7.1), inch(4.9), body))
+                # sarlavha qatorlari: qalin, COLOR_ACCENT
+                body += para_xml(run_xml(l, SIZE_BODY_HEAD, COLOR_ACCENT, bold=True),
+                                 space_before=6, space_after=8)
+        shapes.append(textbox_shape(nid(), "body", inch(0.95), inch(1.75), inch(6.7), inch(5.0), body))
+
+        # --- nozik futer: mavzu + 'N / 10' ---
+        shapes.extend(footer_shapes(nid, idx, FOOTER_TOPIC))
 
     return ''.join(shapes)
 

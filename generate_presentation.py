@@ -113,26 +113,55 @@ def add_text(slide, left, top, width, height, anchor=MSO_ANCHOR.TOP):
     return tf
 
 
+def add_square_picture(slide, img_stream, box_left, box_top, box_cx, box_cy):
+    """Kvadrat (1000x1000) rasmni katak ichiga aspektni saqlab, markazda joylaydi.
+
+    Rasm cho'zilmasligi uchun eng kichik o'lchov bo'yicha kvadrat tomon tanlanadi."""
+    side = min(box_cx, box_cy)
+    off_x = box_left + (box_cx - side) // 2
+    off_y = box_top + (box_cy - side) // 2
+    return slide.shapes.add_picture(img_stream, off_x, off_y, width=side, height=side)
+
+
+# Content slaydlardagi qisqa mavzu futeri (faqat navigatsiya yorlig'i;
+# slaydlardagi asosiy matn verbatim manbadan o'zgarmagan).
+FOOTER_TOPIC = "Fleshkalar (USB) qanday ishlaydi?"
+
+
+def add_footer(slide, idx):
+    """Content slaydlar uchun nozik futer: mavzu (chapda) va 'N / 10' (o'ngda)."""
+    add_accent_bar(slide, Inches(0.6), Inches(7.02), Inches(12.13), Inches(0.012), COLOR_PANEL)
+    tf_l = add_text(slide, Inches(0.6), Inches(7.06), Inches(9.0), Inches(0.4), MSO_ANCHOR.MIDDLE)
+    set_run(tf_l.paragraphs[0].add_run(), FOOTER_TOPIC, SIZE_META, COLOR_BODY)
+    tf_r = add_text(slide, Inches(9.8), Inches(7.06), Inches(2.93), Inches(0.4), MSO_ANCHOR.MIDDLE)
+    pr = tf_r.paragraphs[0]
+    pr.alignment = PP_ALIGN.RIGHT
+    set_run(pr.add_run(), "%d / 10" % (idx + 1), SIZE_META, COLOR_ACCENT, bold=True)
+
+
 def build_title_slide(prs, data):
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # bo'sh layout
     add_bg(slide, COLOR_BG_DARK)
 
-    # O'ng tomonda rasm paneli
+    # O'ng tomonda rasm paneli (kvadrat rasm, markazda, aspekt saqlangan)
+    add_accent_bar(slide, Inches(7.4), 0, Inches(5.933), SLIDE_H, COLOR_PANEL)
     img_stream, _ = download_image(data["image"], 0)
-    pic_left = Inches(7.4)
-    slide.shapes.add_picture(img_stream, pic_left, 0, width=Inches(5.933), height=SLIDE_H)
+    add_square_picture(slide, img_stream, Inches(7.4), 0, Inches(5.933), SLIDE_H)
 
     # Chapda aksent chiziq
-    add_accent_bar(slide, Inches(0.6), Inches(1.2), Inches(0.12), Inches(2.4), COLOR_ACCENT)
+    add_accent_bar(slide, Inches(0.6), Inches(1.2), Inches(0.14), Inches(2.3), COLOR_ACCENT)
 
-    tf = add_text(slide, Inches(0.9), Inches(1.1), Inches(6.1), Inches(2.6))
+    tf = add_text(slide, Inches(0.95), Inches(1.1), Inches(6.1), Inches(2.6))
     p = tf.paragraphs[0]
     set_run(p.add_run(), data["title"], SIZE_TITLE, COLOR_TITLE, bold=True)
     p2 = tf.add_paragraph()
     p2.space_before = Pt(14)
     set_run(p2.add_run(), data["subtitle"], SIZE_SUBTITLE, COLOR_ACCENT, italic=True)
 
-    tf2 = add_text(slide, Inches(0.9), Inches(4.2), Inches(6.1), Inches(2.6))
+    # nozik ajratuvchi chiziq
+    add_accent_bar(slide, Inches(0.95), Inches(4.15), Inches(5.9), Inches(0.012), COLOR_PANEL)
+
+    tf2 = add_text(slide, Inches(0.95), Inches(4.35), Inches(6.1), Inches(2.6))
     first = True
     for line in data["lines"]:
         p = tf2.paragraphs[0] if first else tf2.add_paragraph()
@@ -146,16 +175,21 @@ def build_closing_slide(prs, data):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_bg(slide, COLOR_BG_DARK)
 
+    # To'liq ekran rasm fon sifatida (aspekt saqlanadi, markazda)
     img_stream, _ = download_image(data["image"], 9)
-    slide.shapes.add_picture(img_stream, 0, 0, width=SLIDE_W, height=SLIDE_H)
+    add_square_picture(slide, img_stream, 0, 0, SLIDE_W, SLIDE_H)
 
-    # Yarim shaffof emas, lekin to'q panel markazda
-    panel = add_accent_bar(slide, Inches(1.5), Inches(2.3), Inches(10.33), Inches(3.0), COLOR_PANEL)
+    # Markaziy panel + aksent ramka
+    panel = add_accent_bar(slide, Inches(1.5), Inches(2.2), Inches(10.33), Inches(3.1), COLOR_PANEL)
     panel.fill.fore_color.rgb = _rgb(COLOR_BG_DARK)
+    panel.line.color.rgb = _rgb(COLOR_ACCENT)
+    panel.line.width = Pt(1.0)
+    add_accent_bar(slide, Inches(6.17), Inches(2.55), Inches(1.0), Inches(0.06), COLOR_ACCENT)
 
-    tf = add_text(slide, Inches(1.8), Inches(2.5), Inches(9.7), Inches(2.6), MSO_ANCHOR.MIDDLE)
+    tf = add_text(slide, Inches(1.9), Inches(2.4), Inches(9.53), Inches(2.7), MSO_ANCHOR.MIDDLE)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
+    p.space_before = Pt(6)
     set_run(p.add_run(), data["title"], SIZE_TITLE, COLOR_ACCENT, bold=True)
     for line in data["lines"]:
         pp = tf.add_paragraph()
@@ -169,28 +203,47 @@ def build_content_slide(prs, data, idx):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     add_bg(slide, COLOR_BG_DARK)
 
-    # Yuqori sarlavha zonasi
-    add_accent_bar(slide, 0, Inches(1.15), SLIDE_W, Inches(0.05), COLOR_ACCENT)
-    add_accent_bar(slide, Inches(0.6), Inches(0.35), Inches(0.12), Inches(0.6), COLOR_ACCENT)
-    tf_title = add_text(slide, Inches(0.9), Inches(0.3), Inches(11.8), Inches(0.9), MSO_ANCHOR.MIDDLE)
+    # Yuqori sarlavha zonasi (title band + nozik aksent chizig'i)
+    add_accent_bar(slide, Inches(0.6), Inches(0.33), Inches(0.14), Inches(0.62), COLOR_ACCENT)
+    tf_title = add_text(slide, Inches(0.95), Inches(0.28), Inches(11.8), Inches(0.78), MSO_ANCHOR.MIDDLE)
     p = tf_title.paragraphs[0]
     set_run(p.add_run(), data["title"], SIZE_SLIDE_TITLE, COLOR_TITLE, bold=True)
+    add_accent_bar(slide, Inches(0.6), Inches(1.12), Inches(12.13), Inches(0.04), COLOR_ACCENT)
 
-    # O'ng tomonda rasm
+    # O'ng tomonda rasm paneli (kvadrat, markazda, aspekt saqlangan)
+    panel_left, panel_top = Inches(8.35), Inches(1.45)
+    panel_cx, panel_cy = Inches(4.38), Inches(5.35)
+    imgpanel = add_accent_bar(slide, panel_left, panel_top, panel_cx, panel_cy, COLOR_PANEL)
+    imgpanel.line.color.rgb = _rgb(COLOR_ACCENT2)
+    imgpanel.line.width = Pt(1.0)
     img_stream, _ = download_image(data["image"], idx)
-    slide.shapes.add_picture(img_stream, Inches(8.5), Inches(1.6), width=Inches(4.3), height=Inches(5.4))
+    pad = Inches(0.18)
+    add_square_picture(slide, img_stream, panel_left + pad, panel_top + pad,
+                       panel_cx - 2 * pad, panel_cy - 2 * pad)
 
-    # Chapda matn paneli
-    panel = add_accent_bar(slide, Inches(0.5), Inches(1.6), Inches(7.7), Inches(5.4), COLOR_PANEL)
-    tf = add_text(slide, Inches(0.8), Inches(1.85), Inches(7.1), Inches(4.9))
+    # Chapda matn paneli (keng ichki chekkalar bilan)
+    add_accent_bar(slide, Inches(0.5), Inches(1.45), Inches(7.5), Inches(5.35), COLOR_PANEL)
+    add_accent_bar(slide, Inches(0.5), Inches(1.45), Inches(0.08), Inches(5.35), COLOR_ACCENT)
+    tf = add_text(slide, Inches(0.95), Inches(1.75), Inches(6.7), Inches(5.0))
     first = True
     for line in data["lines"]:
         p = tf.paragraphs[0] if first else tf.add_paragraph()
-        p.space_after = Pt(10)
-        bold = line.strip().startswith("-")
-        set_run(p.add_run(), line, SIZE_BODY if bold else SIZE_BODY_HEAD,
-                COLOR_BODY if bold else COLOR_ACCENT, bold=not bold)
+        is_bullet = line.strip().startswith("-")
+        if is_bullet:
+            # bullet qatorlari: COLOR_BODY, kichik chekinish bilan
+            p.space_before = Pt(4)
+            p.space_after = Pt(10)
+            p.level = 1
+            set_run(p.add_run(), line, SIZE_BODY, COLOR_BODY)
+        else:
+            # sarlavha qatorlari: qalin, COLOR_ACCENT
+            p.space_before = Pt(6)
+            p.space_after = Pt(8)
+            set_run(p.add_run(), line, SIZE_BODY_HEAD, COLOR_ACCENT, bold=True)
         first = False
+
+    # Nozik futer: mavzu + 'N / 10'
+    add_footer(slide, idx)
     return slide
 
 
