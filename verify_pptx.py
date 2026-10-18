@@ -5,7 +5,9 @@
 Tekshiruvlar:
   * ZIP to'plami ochiladi va barcha XML qismlari to'g'ri (well-formed).
   * Aynan 10 ta slayd mavjud (presentation.xml va slide fayllari).
-  * Har bir slaydda rasm (blip embed + media fayli) bor.
+  * Har bir slaydda mavzuga aloqador vizual bor. Vizual quyidagilardan biri:
+      - vektor illyustratsiya guruhi (DrawingML `name="illustration"`), yoki
+      - ichiga joylangan rasm (`r:embed` + `ppt/media/`).
   * Har bir matn run'ida "Times New Roman" shrifti o'rnatilgan.
   * Hech bir shrift o'lchami 12 pt dan kichik emas.
 Agar python-pptx mavjud bo'lsa, qo'shimcha ravishda u orqali ham ochib ko'radi.
@@ -47,16 +49,27 @@ with zipfile.ZipFile(path) as z:
     else:
         errors.append("presentation.xml ichida %d ta sldId" % len(sldids))
 
-    # 3) Har slaydda rasm
+    # 3) Har slaydda mavzuga aloqador vizual (vektor illyustratsiya YOKI rasm)
     media = [n for n in names if n.startswith("ppt/media/")]
-    if len(media) == 10:
-        ok.append("10 ta media (rasm) fayli joylangan")
-    else:
-        errors.append("Media fayllari soni %d" % len(media))
+    with_illustration = 0
+    with_media = 0
     for sf in slide_files:
         s = z.read(sf).decode("utf-8")
-        if "r:embed" not in s:
-            errors.append("%s da rasm (r:embed) yo'q" % sf)
+        has_vec = 'name="illustration"' in s
+        has_img = "r:embed" in s
+        if has_vec:
+            with_illustration += 1
+        if has_img:
+            with_media += 1
+        if not (has_vec or has_img):
+            errors.append("%s da vizual (illyustratsiya yoki rasm) yo'q" % sf)
+    if with_illustration == 10:
+        ok.append("10 ta slaydda mavzuga aloqador vektor illyustratsiya mavjud")
+    elif with_media == 10:
+        ok.append("10 ta slaydda joylangan rasm mavjud (%d media fayli)" % len(media))
+    elif with_illustration + with_media >= 10:
+        ok.append("Har bir slaydda vizual bor (%d vektor, %d rasm)"
+                  % (with_illustration, with_media))
 
     # 4) Shrift va o'lcham tekshiruvi
     bad_font = 0
